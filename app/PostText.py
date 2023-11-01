@@ -73,9 +73,6 @@ class PostText:
             self.text = ""
 
         new_paragraph = '\n\n' + new_paragraph.strip()
-
-        # Remove any existing blank lines at the end of the text and add new_paragraph
-        print(self.text.rstrip())
         self.text = self.text.rstrip() + new_paragraph
 
         return self.text
