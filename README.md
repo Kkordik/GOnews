@@ -1,4 +1,4 @@
-##Available commands:
+## Available bot commands:
 ```
 !send <to_chat_id> <from_chat_id> <message_id>
 ```
