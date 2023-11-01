@@ -4,7 +4,7 @@ from database.Tables.Table import MysqlTable, SqliteTable
 from database.Tables.Values.NotFormattedValue import NotFormattedValue
 
 
-class ChatTable(SqliteTable):
+class ChatsTable(SqliteTable):
     """
     chat_id	bigint
     delete_tails	text
@@ -17,8 +17,8 @@ class ChatTable(SqliteTable):
 
 
 class ChatDb:
-    def __init__(self, table: ChatTable, chat_id, is_parsed: bool = None, delete_tails: typing.List[str] = None):
-        self.table: ChatTable = table
+    def __init__(self, table: ChatsTable, chat_id, is_parsed: bool = None, delete_tails: typing.List[str] = None):
+        self.table: ChatsTable = table
         self.chat_id: int = int(chat_id)
         self.is_parsed: bool = is_parsed
         self.delete_tails: typing.List[str] = delete_tails

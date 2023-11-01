@@ -1,5 +1,5 @@
 from pyrogram import filters
-from database.Tables.ChatTable import ChatDb
+from database.Tables.ChatsTable import ChatDb
 from database.run_db import chat_tb
 
 

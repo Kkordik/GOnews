@@ -40,6 +40,14 @@ class MysqlDatabase(Database):
 
 
 class SqliteDatabase(Database):
+    def create_tables(self):
+        self.execute_db("""
+        CREATE TABLE IF NOT EXISTS chats (
+            chat_id BIGINT NOT NULL PRIMARY KEY,
+            delete_tails TEXT
+        );
+        """)
+
     @staticmethod
     def execute_db(command: str, values: list = None):
         """
@@ -50,8 +58,12 @@ class SqliteDatabase(Database):
         :return: list of fetched rows
         """
         with sqlite3.connect("bot_sqlite.db") as con:
-            with con.cursor() as cur:
+            cur = con.cursor()
+            if values is not None:
+                values = tuple(values)
                 cur.execute(command, values)
-                res = cur.fetchall()
+            else:
+                cur.execute(command)
+            res = cur.fetchall()
             con.commit()
         return res

@@ -1,6 +1,6 @@
 from app.parse_admin_chat.parse_admin_chat_filter import filter_admin_chat
 from app.define_app import app
-from database.Tables.ChatTable import ChatDb
+from database.Tables.ChatsTable import ChatDb
 from database.run_db import chat_tb
 
 
@@ -18,7 +18,7 @@ async def hello(_, message):
 
             message = await app.get_messages(chat_id=from_chat_id, message_ids=message_id)
             text = message.text or message.caption
-            text = text.html
+            text = text.html if text else None
         except Exception as ex:
             await app.send_message(chat_id=message.chat.id,
                                    text=f'Проверь правильность комманды, ошибка:\n\n{ex}')
@@ -41,31 +41,29 @@ async def hello(_, message):
         # Getting information from the command
         try:
             channel_username = message.text.split()[1]
-            # Adding '@' to the username, if it wasn'ts
+            # Adding '@' to the username, if it wasn't
             if '@' not in channel_username and '/' not in channel_username:
                 channel_username = '@' + channel_username
+            elif 't.me/' in channel_username and '/+' not in channel_username:
+                channel_username = '@' + channel_username.split('t.me/')[1]
             channel_delete_tails = message.text.split("'")[1] if len(message.text.split("'")[1]) > 0 else None
         except Exception as ex:
             await app.send_message(chat_id=message.chat.id,
                                    text=f'Проверь правильность комманды, ошибка:\n\n{ex}')
             return
-
+        print(channel_username)
         try:
-            # Finding Chat object by its username, to get chat.id later
-            channel_chat = await app.get_chat(channel_username)
-
-            app_user = await app.get_me()
-            if not await channel_chat.get_member(user_id=app_user.id):
-                # Joining the chat
-                await app.join_chat(chat_id=channel_username)
-
+            channel_chat = await app.join_chat(chat_id=channel_username)
         except Exception as ex:
-            await app.send_message(chat_id=message.chat.id,
-                                   text=f'Канал не найден или не удалось подписаться, ошибка:\n\n{ex}')
-            return
+            if 'USER_ALREADY_PARTICIPANT' not in str(ex):
+                await app.send_message(chat_id=message.chat.id,
+                                       text=f'Канал не найден или не удалось подписаться, ошибка:\n\n{ex}')
+                return
+            else:
+                channel_chat = await app.get_chat(chat_id=channel_username)
 
         # Adding channel to the database
         chat_db = ChatDb(table=chat_tb, chat_id=channel_chat.id)
         chat_db.add_chat(delete_tails=channel_delete_tails)
 
-        await app.send_message(chat_id=message.chat.id, text='Готово!')
+        await app.send_message(chat_id=message.chat.id, text='Готово! Канал добавлен.')

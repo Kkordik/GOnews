@@ -2,22 +2,22 @@ from bs4 import BeautifulSoup
 import re
 import openai
 from typing import Union, List
-from config import GPT_MODEL, GPT_START_MSG, OPEN_AI_KEY
+from config import config_data
 
-openai.api_key = OPEN_AI_KEY
+openai.api_key = config_data['OPEN_AI_KEY']
 
 
 class PostText:
     def __init__(self, text: str = None):
-        self.text: str = text or ''
+        self.text: str = text
 
     def remove_patterns(self, pattern_list: Union[List[str], str]):
         """
         Removes patterns from the post
-        :param pattern_list: can be a list of patterns or a string in the format 'pattern1,pattern2,..'
+        :param pattern_list: can be a list of patterns or a string in the format 'pattern1,pattern2'
         :return: edited text
         """
-        if len(self.text) < 1:
+        if not self.text:
             return self.text
 
         # Create a regular expression pattern for matching any of the phrases in the list
@@ -28,6 +28,9 @@ class PostText:
         return self.text
 
     def remove_empty_tags(self):
+        if not self.text:
+            return None
+
         # Parse the input text using BeautifulSoup
         soup = BeautifulSoup(self.text, 'html.parser')
 
@@ -46,6 +49,9 @@ class PostText:
         :param end_char: The end character to add, default '◌</b>'
         :return: edited text
         """
+        if not self.text:
+            return None
+
         # Find the first paragraph using a regular expression (search until the first empty line or \n\n)
         first_paragraph_match = re.search(r'(.+?)(\n|$)', self.text, re.DOTALL)
 
@@ -63,6 +69,9 @@ class PostText:
             return self.text
 
     def add_new_paragraph(self, new_paragraph: str):
+        if not self.text:
+            self.text = ""
+
         new_paragraph = '\n\n' + new_paragraph.strip()
 
         # Remove any existing blank lines at the end of the text and add new_paragraph
@@ -71,35 +80,30 @@ class PostText:
 
         return self.text
 
-    async def translate_on_ru(self):
-        if len(self.text) < 1:
-            return self.text
+    async def translate(self, language: str = 'English'):
+        """
+        Translate the text using OpenAI API. RETURNS NEW PostText OBJECT
+        :param language: Language to translate to. Better to write it on the language you want to translate to.
+         For example, 'English' or 'Українську' or 'Русский'
+        :return: new PostText object with translated text
+        """
+        if len(language) < 2:
+            raise Exception("Language must be at least 2 characters long")
+        elif len(language) > 20:
+            raise Exception("Language must be less than 20 characters long")
+
+        if not self.text:
+            return type(self)()
 
         response = await openai.ChatCompletion.acreate(
-            model=GPT_MODEL,
-            messages=[{"role": "system", "content": GPT_START_MSG},
+            model=config_data['GPT_MODEL'],
+            messages=[{"role": "system", "content": config_data['GPT_START_MSG']},
                       {"role": "user", "content": f"""
-                      Переведи новость на русский. Используй Telegram HTML formatting:
+                      Translate this news on {language}, use Telegram HTML formatting:
                       
                       {self.text}"""}],
 
         )
-        self.text = response.choices[0].message.content
+        translated_text = response.choices[0].message.content
 
-        return self.text
-
-    async def translate_on_en(self):
-        if len(self.text) < 1:
-            return self.text
-
-        response = await openai.ChatCompletion.acreate(
-            model=GPT_MODEL,
-            messages=[{"role": "system", "content": GPT_START_MSG},
-                      {"role": "user", "content": f"""
-                      Translate the post on English. Use telegram HTML formatting:
-                      
-                      {self.text}"""}],
-        )
-        self.text = response.choices[0].message.content
-
-        return self.text
+        return type(self)(text=translated_text)

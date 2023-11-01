@@ -5,12 +5,12 @@ from database.Tables.Values.NotFormattedValue import NotFormattedValue
 
 class Table:
     def __init__(self, name: str, db: Database, columns: list):
-        self.__name = name
+        self._name = name
         self.db = db
-        self.__columns = columns
+        self._columns = columns
 
     def get_table_name(self):
-        return self.__name
+        return self._name
 
 
 class MysqlTable(Table):
@@ -25,7 +25,7 @@ class MysqlTable(Table):
         res = await self.db.execute_db(command, values)
         results = []
         for row in res:
-            results.append(dict(zip(self.__columns, row)))
+            results.append(dict(zip(self._columns, row)))
         return results
 
     def __check_parameters(self, parameters: dict) -> dict:
@@ -37,11 +37,11 @@ class MysqlTable(Table):
         """
         for column in parameters.keys():
             # Checking if given columns in parameters exist in table and adding values to list
-            if column in self.__columns:
+            if column in self._columns:
                 if not isinstance(parameters[column], NotFormattedValue):
                     parameters[column] = SecureValue(parameters[column])
             else:
-                raise Exception("In table '{}' is no such column: '{}'".format(self.__name, column))
+                raise Exception("In table '{}' is no such column: '{}'".format(self._name, column))
         return parameters
 
     @staticmethod
@@ -82,7 +82,7 @@ class MysqlTable(Table):
         # Create string WHERE expression
         where_str, where_values = self._create_where_expression(where, logical_expr)
 
-        return await self.execute_tb("{} {} {}".format(command.format(self.__name), where_str, ending_text),
+        return await self.execute_tb("{} {} {}".format(command.format(self._name), where_str, ending_text),
                                      where_values)
 
     async def delete_line(self, command: str = "DELETE FROM {} WHERE {}", logical_expr: str = "AND", **where):
@@ -102,7 +102,7 @@ class MysqlTable(Table):
         # Create string WHERE expression
         where_str, where_values = self._create_where_expression(where, logical_expr,  prefix="")
 
-        return await self.execute_tb(command.format(self.__name, where_str), where_values)
+        return await self.execute_tb(command.format(self._name, where_str), where_values)
 
     async def insert_vals(self, command: str = "INSERT IGNORE INTO {}({}) VALUES ({})", **columns_vals):
         """
@@ -127,7 +127,7 @@ class MysqlTable(Table):
 
         return await self.execute_tb(
             command=command.format(
-                self.__name,
+                self._name,
                 unpack_columns,
                 replace_chars
             ),
@@ -147,7 +147,7 @@ class MysqlTable(Table):
         where_str, where_vals = self._create_where_expression(where, logical_expr, prefix="")
         new_vals_str, new_vals = self._create_where_expression(column_new_vals, logical_expr, prefix="")
 
-        return await self.execute_tb(command.format(self.__name, new_vals_str, where_str), new_vals + where_vals)
+        return await self.execute_tb(command.format(self._name, new_vals_str, where_str), new_vals + where_vals)
 
 
 class SqliteTable(Table):
@@ -162,7 +162,7 @@ class SqliteTable(Table):
         res = self.db.execute_db(command, values)
         results = []
         for row in res:
-            results.append(dict(zip(self.__columns, row)))
+            results.append(dict(zip(self._columns, row)))
         return results
 
     def __check_parameters(self, parameters: dict) -> dict:
@@ -174,11 +174,11 @@ class SqliteTable(Table):
         """
         for column in parameters.keys():
             # Checking if given columns in parameters exist in table and adding values to list
-            if column in self.__columns:
+            if column in self._columns:
                 if not isinstance(parameters[column], NotFormattedValue):
                     parameters[column] = SecureValue(parameters[column])
             else:
-                raise Exception("In table '{}' is no such column: '{}'".format(self.__name, column))
+                raise Exception("In table '{}' is no such column: '{}'".format(self._name, column))
         return parameters
 
     @staticmethod
@@ -219,7 +219,7 @@ class SqliteTable(Table):
         # Create string WHERE expression
         where_str, where_values = self._create_where_expression(where, logical_expr)
 
-        return self.execute_tb("{} {} {}".format(command.format(self.__name), where_str, ending_text),
+        return self.execute_tb("{} {} {}".format(command.format(self._name), where_str, ending_text),
                                where_values)
 
     def delete_line(self, command: str = "DELETE FROM {} WHERE {}", logical_expr: str = "AND", **where):
@@ -239,9 +239,10 @@ class SqliteTable(Table):
         # Create string WHERE expression
         where_str, where_values = self._create_where_expression(where, logical_expr,  prefix="")
 
-        return self.execute_tb(command.format(self.__name, where_str), where_values)
+        return self.execute_tb(command.format(self._name, where_str), where_values)
 
-    def insert_vals(self, command: str = "INSERT IGNORE INTO {}({}) VALUES ({})", **columns_vals):
+    def insert_vals(self, command: str = "INSERT OR IGNORE INTO {}({}) VALUES ({})", **columns_vals):
+        # Delete OR in command for MySql
         """
         Insert values in table.
 
@@ -264,7 +265,7 @@ class SqliteTable(Table):
 
         return self.execute_tb(
             command=command.format(
-                self.__name,
+                self._name,
                 unpack_columns,
                 replace_chars
             ),
@@ -275,7 +276,7 @@ class SqliteTable(Table):
         pass
 
     def update_val(self, where: dict, command: str = "UPDATE {} SET {} WHERE {}", logical_expr: str = "AND",
-                         **column_new_vals):
+                   **column_new_vals):
         where = self.__check_parameters(where)
         column_new_vals = self.__check_parameters(column_new_vals)
 
@@ -284,4 +285,4 @@ class SqliteTable(Table):
         where_str, where_vals = self._create_where_expression(where, logical_expr, prefix="")
         new_vals_str, new_vals = self._create_where_expression(column_new_vals, logical_expr, prefix="")
 
-        return self.execute_tb(command.format(self.__name, new_vals_str, where_str), new_vals + where_vals)
+        return self.execute_tb(command.format(self._name, new_vals_str, where_str), new_vals + where_vals)
