@@ -1,4 +1,4 @@
-config.yaml
+configuration.yaml
 /bot_sqlite.db
 /my_account.session
 /.idea/inspectionProfiles/profiles_settings.xml

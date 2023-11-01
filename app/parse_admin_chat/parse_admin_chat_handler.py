@@ -24,17 +24,22 @@ async def hello(_, message):
                                    text=f'Проверь правильность комманды, ошибка:\n\n{ex}')
             return
 
-        if not message.media_group_id:
-            # Sending an edited post to the channel, not a group of media
-            await app.copy_message(chat_id=to_chat_id,
-                                   from_chat_id=from_chat_id,
-                                   message_id=message_id,
-                                   caption=text)
-        else:
-            await app.copy_media_group(chat_id=to_chat_id,
+        try:
+            if not message.media_group_id:
+                # Sending an edited post to the channel, not a group of media
+                await app.copy_message(chat_id=to_chat_id,
                                        from_chat_id=from_chat_id,
                                        message_id=message_id,
-                                       captions=text)
+                                       caption=text)
+            else:
+                await app.copy_media_group(chat_id=to_chat_id,
+                                           from_chat_id=from_chat_id,
+                                           message_id=message_id,
+                                           captions=text)
+        except Exception as ex:
+            await app.send_message(chat_id=message.chat.id,
+                                   text=f'Не удалось отправить сообщение, ошибка:\n\n{ex}')
+            return
 
     # !channel <username> '<tails divided by comma without space>'
     elif '!channel' in message.text:

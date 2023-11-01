@@ -4,7 +4,7 @@ import openai
 from typing import Union, List
 from config import config_data
 
-openai.api_key = config_data['OPEN_AI_KEY']
+openai.api_key = config_data['additional']['OPEN_AI_KEY']
 
 
 class PostText:
@@ -42,7 +42,7 @@ class PostText:
         self.text = str(soup)
         return self.text
 
-    def process_first_paragraph(self, st_char: str = '<b>◌', end_char: str = '◌</b>'):
+    def process_first_paragraph(self, st_char: str = '', end_char: str = ''):
         """
         Add some character at the beginning and ending of the first paragraph
         :param st_char: The start character to add, default '<b>◌'
@@ -51,6 +51,9 @@ class PostText:
         """
         if not self.text:
             return None
+
+        if not (st_char and end_char):
+            return self.text
 
         # Find the first paragraph using a regular expression (search until the first empty line or \n\n)
         first_paragraph_match = re.search(r'(.+?)(\n|$)', self.text, re.DOTALL)
@@ -71,6 +74,8 @@ class PostText:
     def add_new_paragraph(self, new_paragraph: str):
         if not self.text:
             self.text = ""
+        if not new_paragraph:
+            return self.text
 
         new_paragraph = '\n\n' + new_paragraph.strip()
         self.text = self.text.rstrip() + new_paragraph
@@ -93,8 +98,8 @@ class PostText:
             return type(self)()
 
         response = await openai.ChatCompletion.acreate(
-            model=config_data['GPT_MODEL'],
-            messages=[{"role": "system", "content": config_data['GPT_START_MSG']},
+            model=config_data['additional']['GPT_MODEL'],
+            messages=[{"role": "system", "content": config_data['additional']['GPT_START_MSG']},
                       {"role": "user", "content": f"""
                       Translate this news on {language}, use Telegram HTML formatting:
                       
