@@ -18,3 +18,6 @@ if __name__ == '__main__':
     else:
         print(f"{bcolors.OKGREEN}Config edited successfully.{bcolors.ENDC}\n{bcolors.WARNING}The bot hasn't started because the config was edited."
               f" Please restart the program and skip config editing to start the bot.{bcolors.ENDC}")
+        if not os.path.exists('my_account.session'):
+            print(f"{bcolors.WARNING}Since you are running this for the first time, you will be asked to log in. Remember to restart the program after a successful login.{bcolors.ENDC}")
+            app.run()

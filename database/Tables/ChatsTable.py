@@ -1,6 +1,6 @@
 import typing
 from database.Database import Database
-from database.Tables.Table import MysqlTable, SqliteTable
+from database.Tables.Table import SqliteTable
 from database.Tables.Values.NotFormattedValue import NotFormattedValue
 
 
