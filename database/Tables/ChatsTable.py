@@ -1,7 +1,7 @@
 import typing
 from database.Database import Database
 from database.Tables.Table import SqliteTable
-from database.Tables.Values.NotFormattedValue import NotFormattedValue
+from datetime import datetime
 
 
 class ChatsTable(SqliteTable):
@@ -10,18 +10,20 @@ class ChatsTable(SqliteTable):
     delete_tails	text
     """
     __name = "chats"
-    __columns = ["chat_id", "delete_tails"]
+    __columns = ["chat_id", "delete_tails", "date_added"]
 
     def __init__(self, db: Database):
         super().__init__(self.__name, db, self.__columns)
 
 
 class ChatDb:
-    def __init__(self, table: ChatsTable, chat_id, is_parsed: bool = None, delete_tails: typing.List[str] = None):
+    def __init__(self, table: ChatsTable, chat_id, is_parsed: bool = None, delete_tails: typing.List[str] = None,
+                 date_added: datetime = None):
         self.table: ChatsTable = table
         self.chat_id: int = int(chat_id)
         self.is_parsed: bool = is_parsed
         self.delete_tails: typing.List[str] = delete_tails
+        self.date_added: datetime = date_added
 
     def check_is_parsed(self, chat_id=None) -> bool:
         if chat_id:

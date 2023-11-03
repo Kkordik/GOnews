@@ -1,8 +1,6 @@
-import asyncio
 from database.Tables.ChatsTable import ChatsTable
-from config import config_data
-from database.Database import SqliteDatabase, Database
-
+from database.Tables.UrlsTable import UrlsTable
+from database.Database import SqliteDatabase
 
 
 def run_db() -> SqliteDatabase:
@@ -16,3 +14,5 @@ if __name__ == "database.run_db":
 
     # Register main tables
     chat_tb = ChatsTable(db)
+    urls_tb = UrlsTable(db)
+

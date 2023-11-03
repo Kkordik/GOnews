@@ -35,7 +35,7 @@ class SqliteTable(Table):
         :param parameters: dict of structure {"column_name": value}
         :return: {"column_name": value}
         """
-        for column in parameters.keys():
+        for column in parameters.copy():
             # Checking if given columns in parameters exist in table and adding values to list
             if column in self._columns:
                 if not isinstance(parameters[column], NotFormattedValue):

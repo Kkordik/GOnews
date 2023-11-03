@@ -56,7 +56,6 @@ async def hello(_, message):
             await app.send_message(chat_id=message.chat.id,
                                    text=f'Проверь правильность комманды, ошибка:\n\n{ex}')
             return
-        print(channel_username)
         try:
             channel_chat = await app.join_chat(chat_id=channel_username)
         except Exception as ex:
