@@ -1,4 +1,3 @@
-import typing
 from database.Database import Database
 from database.Tables.Table import SqliteTable
 from datetime import datetime
@@ -6,10 +5,11 @@ from datetime import datetime
 
 class UrlsTable(SqliteTable):
     """
-    chat_id	bigint
-    delete_tails	text
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url VARCHAR(2048) NOT NULL UNIQUE,
+    date_added DATETIME DEFAULT CURRENT_TIMESTAMP
     """
-    __name = "chats"
+    __name = "urls"
     __columns = ["id", "url", "date_added"]
 
     def __init__(self, db: Database):
@@ -17,11 +17,13 @@ class UrlsTable(SqliteTable):
 
 
 class UrlsDb:
-    def __init__(self, table: UrlsTable, id: int = None, url: str = None, date_added: datetime = None):
+    def __init__(self, table: UrlsTable, id: int = None, url: str = None, date_added: datetime = None,
+                 last_news_url: str = None):
         self.table: UrlsTable = table
         self.id: int = id
         self.url: str = url
         self.date_added: datetime = date_added
+        self.last_news_url: str = last_news_url
 
     def add_url(self, url=None):
         self.url = url or self.url

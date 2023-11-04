@@ -9,10 +9,9 @@ def run_db() -> SqliteDatabase:
     return _db
 
 
-if __name__ == "database.run_db":
-    db = run_db()
+db = run_db()
 
-    # Register main tables
-    chat_tb = ChatsTable(db)
-    urls_tb = UrlsTable(db)
+# Register main tables
+chat_tb = ChatsTable(db)
+urls_tb = UrlsTable(db)
 

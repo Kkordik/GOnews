@@ -32,7 +32,8 @@ class SqliteDatabase(Database):
         CREATE TABLE IF NOT EXISTS urls (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             url VARCHAR(2048) NOT NULL UNIQUE,
-            date_added DATETIME DEFAULT CURRENT_TIMESTAMP
+            date_added DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_news_url VARCHAR(2048)
         );
         """)
 

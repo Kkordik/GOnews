@@ -4,3 +4,5 @@ configuration.yaml
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
 /.idea/misc.xml
+*.pyc
+**/__pycache__/*

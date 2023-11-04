@@ -4,9 +4,11 @@ from app.define_app import app
 from bcolors import bcolors
 from config import edit_config
 import os
+from app.parse_urls.scheduler import parse_gnews
 
 
 if __name__ == '__main__':
+    parse_gnews()
     print(f'***RESELLING THIS CODE IS FORBIDDEN***\nThank you for using this bot! You can find my github here: https://github.com/Kkordik\n')
     print(f"{bcolors.WARNING}Remember to edit the configuration.yaml file before starting the bot. You can find it in the project's root directory.{bcolors.ENDC}")
     print("Don't know what to do? See the README.md file in the project's root directory.\n")
