@@ -1,5 +1,5 @@
 # GOnews
-
+**GOnews** is a Telegram bot, that parses multiple telegram channels and on new post deletes from it tails (e.g. "Subscribe on @orig_channel") then rephrases it with GPT and adds new tail (e.g. "Subscribe on @my_channel") and sends it to the group of admins, where they can edit the message and forward it to their channel in one click.
 ## Installation and Setup
 
 ### Step 1: Check for Git
