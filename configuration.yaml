@@ -1,0 +1,17 @@
+essential:
+  ADMIN_CHAT_ID: -123123
+  API_HASH: "dw1234123"
+  API_ID: 123123
+  CHANNEL_ID: -123123
+
+additional:
+  USE_GPT: true
+  OPEN_AI_KEY: "sk-d2e23e"
+  GPT_MODEL: "gpt-4o"
+  GPT_START_MSG: "You are helpful translation assistant. Translate without changing
+    news content."
+  LANGUAGE: "Русский"
+  START_CHAR: "<b>◌"
+  END_CHAR: "◌</b>"
+  ENDING: '<b>subscribe @channel</b>'
+  NEWS_INTERVAL_S: 60
